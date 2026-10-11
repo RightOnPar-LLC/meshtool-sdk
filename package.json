@@ -1,0 +1,77 @@
+{
+  "name": "@meshtool/sdk",
+  "version": "0.6.1",
+  "description": "TypeScript SDK and CLI for the MeshTool API: analyze, personalize, orchestrate, run jobs, and use the agent marketplace, with typed errors, retries and timeouts.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "meshtool": "dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./errors": {
+      "types": "./dist/errors.d.ts",
+      "import": "./dist/errors.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "agent-marketplace",
+    "agents",
+    "ai",
+    "ai-agents",
+    "anthropic",
+    "api",
+    "claude",
+    "cli",
+    "mcp",
+    "meshtool",
+    "model-context-protocol",
+    "sdk",
+    "typescript"
+  ],
+  "homepage": "https://github.com/RightOnPar-LLC/meshtool-sdk#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RightOnPar-LLC/meshtool-sdk.git"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "pretest": "npm run build",
+    "test": "node --test --experimental-test-coverage --test-coverage-include=dist/index.js --test-coverage-include=dist/errors.js --test-coverage-lines=80 --test-coverage-branches=80 \"test/*.test.mjs\"",
+    "dev": "tsx watch src/cli.ts",
+    "cli": "tsx src/cli.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/yargs": "^17.0.33",
+    "tsx": "^4.23.13",
+    "typescript": "^5.7.3"
+  },
+  "bugs": {
+    "url": "https://github.com/RightOnPar-LLC/meshtool-sdk/issues",
+    "email": "support@meshtool.ai"
+  },
+  "author": "RightOnPar LLC <support@meshtool.ai> (https://market.meshtool.ai)"
+}
