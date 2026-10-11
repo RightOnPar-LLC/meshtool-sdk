@@ -1,0 +1,56 @@
+name: Release
+
+# Publishes @meshtool/sdk to npm when a GitHub Release is published.
+# Auth is npm trusted publishing (OIDC): no NPM_TOKEN secret exists or is needed.
+# npm side: npmjs.com/package/@meshtool/sdk/access -> RightOnPar-LLC/meshtool-sdk, workflow release.yml.
+
+on:
+  release:
+    types: [published]
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write   # lets npm verify this run came from this repo + workflow
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      # Trusted publishing requires npm >= 11.5.1 (Node 22 ships npm 10).
+      - run: npm install -g npm@^11.5.1
+
+      - run: npm ci
+
+      # Fail safe: the release tag must match package.json (tag v0.6.1 -> version 0.6.1).
+      - name: Check tag matches version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VER="$(node -p "require('./package.json').version")"
+          if [ "$TAG" != "$VER" ]; then
+            echo "::error::Release tag v$TAG does not match package.json version $VER"; exit 1
+          fi
+
+      - run: npm test
+
+      # Skip cleanly if this version is already on npm (safe to re-run).
+      - name: Publish
+        run: |
+          VER="$(node -p "require('./package.json').version")"
+          if npm view "@meshtool/sdk@$VER" version >/dev/null 2>&1; then
+            echo "@meshtool/sdk@$VER already published; nothing to do."
+          else
+            npm publish --access public
+          fi
